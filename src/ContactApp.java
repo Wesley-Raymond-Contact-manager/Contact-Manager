@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class ContactApp {
@@ -20,7 +19,7 @@ public class ContactApp {
             printMenu();
             switch (input.getInt("Enter an option (1, 2, 3, 4 or 5):")) {
                 case 1:
-                    System.out.println(contactList);
+                    printListFormat(contactList);
                     break;
                 case 2:
                     addContactToList();
@@ -33,7 +32,7 @@ public class ContactApp {
                 default:
                     break;
             }
-        } while(input.yesNo("Do you want to continue adding/editing contacts?"));
+        } while(input.yesNo("\nDo you want to continue adding/editing contacts?"));
         writeToContacts();
     }
 
@@ -48,7 +47,7 @@ public class ContactApp {
             }
             contactList.remove(index);
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("Could not find a contact with that name\n");
+            System.out.println("Could not find a contact with that name");
         }
     }
 
@@ -88,9 +87,33 @@ public class ContactApp {
     }
     private static void addContactToList(){
         String name = input.getString("Enter the contact name.");
-        long phoneNumber = input.getLong("Enter the contact phone number.");
+        long phoneNumber = input.getLong(7, 10, "Enter the contact phone number.");
         String contactInfo = name + " - " + phoneNumber;
         contactList.add(contactInfo);
     }
 
+    private static void printListFormat(List<String> contactList){
+        System.out.printf("%-10s | %12s", "Name", "Phone Number");
+        System.out.println();
+        for (String contact : contactList) {
+            String [] contactSplit = contact.split("-");
+
+            System.out.printf("%-10s | %-12s%n", contactSplit[0], formatPhoneNumber(contactSplit[1].trim()));
+        }
+    }
+
+    private static String formatPhoneNumber(String phoneNum) {
+        String [] phoneNums = phoneNum.split("");
+        String formattedPhoneNum = "";
+        if (phoneNum.length() == 7) {
+            phoneNums[3] = "-";
+        } else if (phoneNum.length() == 10) {
+            phoneNums[3] = "-";
+            phoneNums[7] = "-";
+        }
+        for (String character: phoneNums) {
+            formattedPhoneNum += character;
+        }
+       return formattedPhoneNum;
+    }
 }
