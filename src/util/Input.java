@@ -54,6 +54,14 @@ public class Input {
             return getInt(prompt);
         }
     }
+    public long getLong(String prompt) {
+        try {
+            System.out.println(prompt);
+            return Long.parseLong(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            return getInt(prompt);
+        }
+    }
 
     public int getInt(int min, int max, String prompt) {
         try {
