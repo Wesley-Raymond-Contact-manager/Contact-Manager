@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class ContactApp {
@@ -29,7 +29,7 @@ public class ContactApp {
                     searchContactByName();
                     break;
                 case 4:
-                    deleteContact();
+                   deleteContact();
                 default:
                     break;
             }
@@ -38,6 +38,18 @@ public class ContactApp {
     }
 
     private static void deleteContact() {
+        try {
+            String searchName = input.getString("Who would you like to delete from the list?");
+            int index = -1;
+            for (int i = 0; i < contactList.size(); i++) {
+                if (contactList.get(i).toLowerCase().contains(searchName.toLowerCase())){
+                    index = i;
+                }
+            }
+            contactList.remove(index);
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Could not find a contact with that name\n");
+        }
     }
 
     private static void searchContactByName() {
