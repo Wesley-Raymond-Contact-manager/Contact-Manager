@@ -76,7 +76,19 @@ public class Input {
             return getInt(min, max, prompt);
         }
     }
-
+    public int getLong(long min, long max, String prompt) {
+        try {
+            System.out.println(prompt);
+            int userInput = Integer.parseInt(scanner.nextLine());
+            if (userInput < min || userInput > max) {
+                System.out.printf("%d is not a valid number between %d and %d%n", userInput, min, max);
+                return getLong(min, max, prompt);
+            }
+            return userInput;
+        } catch (NumberFormatException e) {
+            return getLong(min, max, prompt);
+        }
+    }
     public double getDouble(String prompt) {
         try {
             System.out.println(prompt);

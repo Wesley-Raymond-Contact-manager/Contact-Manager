@@ -87,7 +87,7 @@ public class ContactApp {
     }
     private static void addContactToList(){
         String name = input.getString("Enter the contact name.");
-        long phoneNumber = input.getLong("Enter the contact phone number.");
+        long phoneNumber = input.getLong(7, 10, "Enter the contact phone number.");
         String contactInfo = name + " - " + phoneNumber;
         contactList.add(contactInfo);
     }
@@ -98,8 +98,22 @@ public class ContactApp {
         for (String contact : contactList) {
             String [] contactSplit = contact.split("-");
 
-            System.out.printf("%-10s | %-12s%n", contactSplit[0], contactSplit[1].trim());
+            System.out.printf("%-10s | %-12s%n", contactSplit[0], formatPhoneNumber(contactSplit[1].trim()));
         }
     }
 
+    private static String formatPhoneNumber(String phoneNum) {
+        String [] phoneNums = phoneNum.split("");
+        String formattedPhoneNum = "";
+        if (phoneNum.length() == 7) {
+            phoneNums[3] = "-";
+        } else if (phoneNum.length() == 10) {
+            phoneNums[3] = "-";
+            phoneNums[7] = "-";
+        }
+        for (String character: phoneNums) {
+            formattedPhoneNum += character;
+        }
+       return formattedPhoneNum;
+    }
 }
