@@ -1,3 +1,5 @@
+import util.Input;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,11 +11,10 @@ import java.util.List;
 public class ContactApp {
     private static List<String> contactList = new ArrayList<>();
     private static Path contactsPath = Paths.get("src","contacts.txt");
-
+    private static final Input input = new Input();
 
     public static void main(String[] args) {
         init();
-
     }
 
     private static void init() {
@@ -33,8 +34,9 @@ public class ContactApp {
         }
     }
     private static void addContactToList(){
-        Contact ray = new Contact("Ray", 2815556535L);
-        String contactInfo = wes.getName() + wes.getPhoneNumber();
+        String name = input.getString("Enter the contact name.");
+        long phoneNumber = input.getInt("Enter the contact phone number.");
+        String contactInfo = name + " - " + phoneNumber;
         contactList.add(contactInfo);
     }
 
