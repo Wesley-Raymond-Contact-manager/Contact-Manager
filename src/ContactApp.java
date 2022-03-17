@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ContactApp {
     private static List<String> contactList = new ArrayList<>();
-    private static Path contactsPath = Paths.get("src","contacts.txt");
+    private static Path contactsPath = Paths.get("src", "contacts.txt");
     private static final Input input = new Input();
 
     public static void main(String[] args) {
@@ -28,36 +28,12 @@ public class ContactApp {
                     searchContactByName();
                     break;
                 case 4:
-                   deleteContact();
+                    deleteContact();
                 default:
                     break;
             }
-        } while(input.yesNo("\nDo you want to continue adding/editing contacts?"));
+        } while (input.yesNo("\nDo you want to continue adding/editing contacts?"));
         writeToContacts();
-    }
-
-    private static void deleteContact() {
-        try {
-            String searchName = input.getString("Who would you like to delete from the list?");
-            int index = -1;
-            for (int i = 0; i < contactList.size(); i++) {
-                if (contactList.get(i).toLowerCase().contains(searchName.toLowerCase())){
-                    index = i;
-                }
-            }
-            contactList.remove(index);
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println("Could not find a contact with that name");
-        }
-    }
-
-    private static void searchContactByName() {
-        String searchName = input.getString("Which contact would you like to see?");
-        contactList.forEach(contact -> {
-            if (contact.toLowerCase().contains(searchName.toLowerCase())){
-                System.out.println(contact);
-            }
-        });
     }
 
     private static List<String> init() {
@@ -70,7 +46,7 @@ public class ContactApp {
         return null;
     }
 
-    private static void printMenu(){
+    private static void printMenu() {
         System.out.println("1. View contacts.\n" +
                 "2. Add a new contact.\n" +
                 "3. Search a contact by name.\n" +
@@ -78,42 +54,109 @@ public class ContactApp {
                 "5. Exit.\n");
     }
 
-    private static void writeToContacts(){
+    private static int searchContactList(String name) {
+        try {
+            int index = -1;
+            for (int i = 0; i < contactList.size(); i++) {
+                String[] contactSplit = contactList.get(i).split(" -");
+                if (contactSplit[0].equalsIgnoreCase(name)) {
+                    System.out.println();
+                    index = i;
+                }
+            }
+            return index;
+        } catch (IndexOutOfBoundsException e) {
+            return -1;
+        }
+    }
+
+    private static void addContactToList() {
+        String name = input.getString("Enter the contact name.");
+        long phoneNumber = validatePhoneNumber(input.getString("Enter the contact phone number."));
+        int index = searchContactList(name);
+        Contact contact = new Contact(name, phoneNumber);
+        if (index == -1) {
+            contactList.add(contact.toString());
+        } else if (index != 1 && input.yesNo("Contact exists. Do you want to overwrite the contact? (y/n)")) {
+            contactList.remove(index);
+            contactList.add(contact.toString());
+        }
+    }
+
+    private static void deleteContact() {
+        int index = searchContactList(input.getString("Enter the contact name."));
+        if (index != -1) {
+            contactList.remove(index);
+            System.out.println("Contact has been deleted. Thank you, come again");
+        } else {
+            System.out.println("Contact either does not exist or is spelled incorrectly");
+        }
+
+    }
+
+    private static void searchContactByName() {
+        String searchName = input.getString("Which contact would you like to see?");
+        for (int i = 0; i < contactList.size(); i++) {
+            if (i == 0) {
+                System.out.printf("%-20s | %12s\n", "Name", "Phone Number");
+            }
+            if (contactList.get(i).toLowerCase().contains(searchName.toLowerCase())) {
+                printListFormat(contactList.get(i));
+            }
+        }
+    }
+
+    private static void writeToContacts() {
         try {
             Files.write(contactsPath, contactList);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    private static void addContactToList(){
-        String name = input.getString("Enter the contact name.");
-        long phoneNumber = input.getLong(7, 10, "Enter the contact phone number.");
-        String contactInfo = name + " - " + phoneNumber;
-        contactList.add(contactInfo);
+
+    private static void printListFormat(List<String> contactList) {
+        System.out.printf("%-20s | %12s\n", "Name", "Phone Number");
+        for (String contact : contactList) {
+            String[] contactSplit = contact.split("-");
+
+            System.out.printf("%-20s | %-12s%n", contactSplit[0], formatPhoneNumber(contactSplit[1].trim()));
+        }
     }
 
-    private static void printListFormat(List<String> contactList){
-        System.out.printf("%-10s | %12s", "Name", "Phone Number");
-        System.out.println();
-        for (String contact : contactList) {
-            String [] contactSplit = contact.split("-");
+    private static void printListFormat(String contact) {
+        String[] contactSplit = contact.split("-");
 
-            System.out.printf("%-10s | %-12s%n", contactSplit[0], formatPhoneNumber(contactSplit[1].trim()));
-        }
+        System.out.printf("%-20s | %-12s%n", contactSplit[0], formatPhoneNumber(contactSplit[1].trim()));
     }
 
     private static String formatPhoneNumber(String phoneNum) {
-        String [] phoneNums = phoneNum.split("");
-        String formattedPhoneNum = "";
-        if (phoneNum.length() == 7) {
-            phoneNums[3] = "-";
-        } else if (phoneNum.length() == 10) {
-            phoneNums[3] = "-";
-            phoneNums[7] = "-";
+        String[] phoneNums = phoneNum.split("");
+        StringBuilder formattedPhoneNum = new StringBuilder();
+        if (phoneNums.length == 10) {
+            for (int i = 0; i < phoneNums.length; i++) {
+                if (i == 2 || i == 5) {
+                    formattedPhoneNum.append(phoneNums[i]).append("-");
+                } else {
+                    formattedPhoneNum.append(phoneNums[i]);
+                }
+            }
+        } else {
+            for (int i = 0; i < phoneNums.length; i++) {
+                if (i == 2) {
+                    formattedPhoneNum.append(phoneNums[i]).append("-");
+                } else {
+                    formattedPhoneNum.append(phoneNums[i]);
+                }
+            }
         }
-        for (String character: phoneNums) {
-            formattedPhoneNum += character;
+        return formattedPhoneNum.toString();
+    }
+
+    private static long validatePhoneNumber(String phoneNumber) {
+        if (phoneNumber.length() == 7 || phoneNumber.length() == 10) {
+            return Long.parseLong(phoneNumber);
         }
-       return formattedPhoneNum;
+        String userInput = input.getString("Phone numbers must be either 7 or 10 digits.");
+        return validatePhoneNumber(userInput);
     }
 }
