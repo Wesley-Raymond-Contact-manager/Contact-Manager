@@ -59,7 +59,7 @@ public class Input {
             System.out.println(prompt);
             return Long.parseLong(scanner.nextLine());
         } catch (NumberFormatException e) {
-            return getInt(prompt);
+            return getLong(prompt);
         }
     }
 
@@ -76,10 +76,10 @@ public class Input {
             return getInt(min, max, prompt);
         }
     }
-    public int getLong(long min, long max, String prompt) {
+    public long getLong(long min, long max, String prompt) {
         try {
             System.out.println(prompt);
-            int userInput = Integer.parseInt(scanner.nextLine());
+            long userInput = Integer.parseInt(scanner.nextLine());
             if (userInput < min || userInput > max) {
                 System.out.printf("%d is not a valid number between %d and %d%n", userInput, min, max);
                 return getLong(min, max, prompt);
